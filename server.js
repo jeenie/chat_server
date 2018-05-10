@@ -8,16 +8,31 @@ app.get('/', function(req, res){
 });
 
 //들어오는 socket을 위한 connection 이벤트 대기
+//parameter로 들어오는 socket => 접속한 사용자에 대한 object
 io.on('connection', function(socket){
+  //login 이벤트 처리
+  socket.on('login', function(name) {
+    var user = name;
+    console.log('client logged-in: \n socketId:' + socket.id + '\n name: ' + user);
+
+    //socket에 클라이언트 정보 저장
+    socket.name = user;
+
+    io.to(socket.id).emit('change name', user);
+  });
 
   //연결이 끊기면 콘솔에 상태출력
   socket.on('disconnect', function(){
-    console.log('user disconnected : ' + socket.name);
+    console.log('user disconnected : ' + socket.id);
   });
 
   //전송메시지 작성후 send버튼 클릭시 console에 데이터 출력
-  socket.on('chat', function(data) {
-    io.emit('chat', data);
+  socket.on('send', function(name, msg) {
+    //닉네임과 전달 메세지 조합
+    var message = name + ' : ' + msg;
+    console.log(msg);
+    //emit() : 모든 접속자에게 메세지 전송
+    io.emit('receive', message);
   });
 });
 
