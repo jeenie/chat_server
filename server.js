@@ -4,22 +4,23 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 app.get('/', function(req, res){
-    res.sendfile('client.html');
+    res.sendfile(__dirname + '/client.html');
 });
 
-//들어오는 socket을 위한 connection 이벤트 대기 => 콘솔 대기로 처리
+//들어오는 socket을 위한 connection 이벤트 대기
 io.on('connection', function(socket){
-  console.log('a user connected');
+
   //연결이 끊기면 콘솔에 상태출력
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    console.log('user disconnected : ' + socket.name);
   });
 
-  socket.on('chat', function(msg) {
-    console.log('message : ' + msg);
+  //전송메시지 작성후 send버튼 클릭시 console에 데이터 출력
+  socket.on('chat', function(data) {
+    io.emit('chat', data);
   });
 });
 
 server.listen(3000, function(){
-  console.log('listen on * : 3000');
+  console.log('chat server on * : 3000');
 });

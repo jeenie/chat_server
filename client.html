@@ -20,19 +20,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+    $(function(){
       var socket = io();
-
       //send버튼이 클릭되면
       $("form").submit(function(e) {
-        //e.preventDefault();
-        //var $msgForm = $("#msgForm");
         //emit : 서버로 보낼 이벤트,데이터
         //주의 : 서버에서의 이벤트 이름과 클라이언트의 이벤트 이름은 동일해야함
-        //클라이언트에서 메시지 작성후 send 버튼 누르면 console에 그 전송 메시지 출력.
         socket.emit("chat", $("#msgForm").val());
         $("#msgForm").val("");
         return false;
       });
+
+      //서버로부터 메시지가 수신되면
+      socket.on("chat", function(data) {
+        $("#chatLogs").append($("<li>").text(data));
+      });
+    });
     </script>
   </body>
 </html>
